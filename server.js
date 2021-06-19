@@ -8,7 +8,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 app.get('/', async(req, res, next) => {
   try{
-    res.sendFile(path.join(__dirname, 'index.html'))
+    res.sendFile(path.join(__dirname, 'public', 'index.html'))
   }
   catch(err){
     next(err)
@@ -24,8 +24,21 @@ app.get('/api/companies', async(req, res, next) => {
     next(err)
   }
 })
+app.get('/api/cities/:companyId', async(req, res, next) => {
+  try{
+    const companyList = await Company.findAll();
+    const cityList = await City.findAll({
+      include: Company
+    });
+    res.send(cityList)
+  }
+  catch(err){
+    next(err)
+  }
+})
 app.get('/api/employees/:companyId', async(req, res, next) => {
   try{
+    const companyList = await Company.findAll();
     const employeeList = await Employee.findAll({
       where: {
         companyId: req.params.companyId
